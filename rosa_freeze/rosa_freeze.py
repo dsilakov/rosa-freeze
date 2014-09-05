@@ -35,6 +35,7 @@ Return Value:
     5 - storage device is already mounted
     61 - path to the folder is not absolute
     62 - can't determine top-level parent for the folder
+    99 - smth went wrong during 'os.system' run
 '''
 def enable_freeze(skip_dirs, storage, folder=""):
     status = get_status()
@@ -45,12 +46,15 @@ def enable_freeze(skip_dirs, storage, folder=""):
 
     uuid = ""
 
+    skip_dirs.extend(_detect_folders_to_skip(skip_dirs))
+
     if storage == "folder":
         if not folder.startswith("/"):
             return 61
 
         if not os.path.exists(folder):
-            os.system("mkdir -p " + folder)
+            if os.system("mkdir -p " + folder):
+                return 99
 
         # Let's ensure that the folder will not be frozen
         path_components = folder.split("/")
@@ -71,7 +75,8 @@ def enable_freeze(skip_dirs, storage, folder=""):
 	    return 5
 
     # For safety - load aufs module
-    os.system("modprobe aufs")
+    if os.system("modprobe aufs"):
+        return 99
 
     # Enable aufs mounting for root in dracut
     _enable_freeze_dracut(uuid, skip_dirs, folder)
@@ -125,6 +130,7 @@ Try to merge current state to the original filesystem
 Return Value:
     0 - success
     1 - freeze mode is not enabled
+    99 - smth went wrong during os.system run
 '''
 def merge_state():
     status = get_status()
@@ -133,15 +139,18 @@ def merge_state():
 
     # Find original root device and mount it to /tmp/sysroot-orig
     orig_root = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-ro").read().rstrip()
-    os.system("mkdir -p /tmp/sysroot-orig")
-    os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig")
+    if os.system("mkdir -p /tmp/sysroot-orig"):
+        return 99
+    if os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig"):
+        return 99
 
     # rsync current state of 'frozen' folders.
     # Note that we don't support situation when some of these folders
     # are originally mounted from different partitions
     # (e.g., /var on separate partinion is not supported)
     for d in os.listdir('/tmp/sysroot-rw/'):
-        os.system("rsync -avH --delete /" + d + " /tmp/sysroot-orig")
+        if os.system("rsync -avH --delete /" + d + " /tmp/sysroot-orig"):
+            return 99
 
     # Cleanup
 #    os.system("umount /tmp/sysroot-orig")
@@ -212,7 +221,9 @@ def _enable_freeze_now(skip_dirs, storage, folder=""):
                 os.system("mkdir -m 750 -p /tmp/sysroot-rw/" + d)
             else:
                 os.system("mkdir -m 755 -p /tmp/sysroot-rw/" + d)
-            os.system("mount -n -t aufs -o nowarn_perm,noatime,xino=/tmp/xinos/" + d + ".xino.aufs,dirs=/tmp/sysroot-rw/" + d + "=rw:/" + d + "=rr none /" + d)
+
+            if os.system("mount -n -t aufs -o nowarn_perm,noatime,xino=/tmp/xinos/" + d + ".xino.aufs,dirs=/tmp/sysroot-rw/" + d + "=rw:/" + d + "=rr none /" + d):
+                return 99
 
 '''
 Modify dracut parameters in grub config - add aufs_root
@@ -241,3 +252,18 @@ Get UUID by device name
 def _get_device_uuid(storage):
     uuid = os.popen("blkid " + storage + " -o udev | grep 'UUID=' | cut -f2 -d=").read().rstrip()
     return uuid
+
+'''
+Detect which top-level folders are used as a mount points.
+Return a list of such folders which are not yet included in skip_dirs
+'''
+def _detect_folders_to_skip(skip_dirs):
+    more_dirs = []
+    for d in os.listdir('/'):
+        if os.path.isdir("/" + d) and d not in skip_dirs:
+            dir_mnt = os.popen("findmnt -n -o TARGET /" + d).read().rstrip()
+            if dir_mnt:
+                more_dirs.append(d)
+                print "NOTE: '" + d + "' folder is mounted from another partition, it will not be frozen"
+
+    return more_dirs
