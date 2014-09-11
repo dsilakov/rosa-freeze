@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import shutil
+import time
 
 grub_cfg_name = '/etc/default/grub'
 grub_tmp_cfg_name = '/etc/default/grub.new'
@@ -127,12 +128,15 @@ def disable_freeze():
 '''
 Try to merge current state to the original filesystem
 
+Parameters:
+    backup_folder - if not empty, specifies a fodler to store backups of modified/removed files
+
 Return Value:
     0 - success
     1 - freeze mode is not enabled
     99 - smth went wrong during os.system run
 '''
-def merge_state():
+def merge_state(backup_folder=""):
     status = get_status()
     if status != 'enabled':
         return 1
@@ -144,12 +148,16 @@ def merge_state():
     if os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig"):
         return 99
 
+    backup_params = ""
+    if backup_folder > "":
+        backup_params = "--backup --backup-dir=" + backup_folder
+
     # rsync current state of 'frozen' folders.
     # Note that we don't support situation when some of these folders
     # are originally mounted from different partitions
     # (e.g., /var on separate partinion is not supported)
     for d in os.listdir('/tmp/sysroot-rw/'):
-        if os.system("rsync -avH --delete /" + d + " /tmp/sysroot-orig"):
+        if os.system("rsync -avH --delete " + backup_params + " /" + d + " /tmp/sysroot-orig"):
             return 99
 
     # Cleanup
@@ -176,6 +184,46 @@ def get_status():
             return 'disabled_pending'
         else:
             return 'disabled'
+
+'''
+Create restore point
+
+Return Value:
+    0 - success
+    1 - freeze mode is not enabled
+    2 - no folder is specified to store restore point and tmpfs is used to store changes;
+        we refuse to create restore points in tmpfs
+'''
+def create_restore_point(folder=""):
+    status = get_status()
+    if status != 'enabled':
+        return 1
+
+    if folder == "":
+        storage_type = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-rw").read().rstrip()
+        if storage_type == "tmpfs":
+            return 2
+        else:
+            folder = "/tmp/sysroot-orig/restore_points"
+
+    # Append current timestamp to folder
+    folder = folder + "/" + str(int(time.time()))
+
+    res = merge_state(folder)
+    exit(res)
+
+'''
+Get available restore points
+'''
+def list_restore_points(folder=""):
+    return []
+
+'''
+Rollback to a given restore point
+'''
+def rollback_to_restore_point(point, folder=""):
+    exit(0)
+
 
 ###########################
 # Interlal functions

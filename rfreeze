@@ -51,6 +51,19 @@ def parse_command_line():
     parser_merge = subparsers.add_parser('merge', help='Merge current system state into the original one')
     parser_merge.set_defaults(func=merge)
 
+    # Create restore point
+    parser_create_rp = subparsers.add_parser('save-point', help='Create restore point save original state of the system and then merge the current system state into the original')
+    parser_create_rp.set_defaults(func=create_rp)
+
+    # List restore points
+    parser_list_rp = subparsers.add_parser('list-points', help='Get list of restore points which can be used for rollback')
+    parser_list_rp.set_defaults(func=list_rp)
+
+    # Rollback to restore point
+    parser_rollback = subparsers.add_parser('rollback', help='Rollback system to a given restore point')
+    parser_rollback.set_defaults(func=rollback)
+    parser_rollback.add_argument('point', action='store', help='restore point (run "rfreeze list-points" to get possible values)')
+
     command_line = parser.parse_args(sys.argv[1:])
 
 '''
@@ -109,6 +122,23 @@ def merge():
 	print "Something went wrong during merge, please inform developers..."
 
     exit(res)
+
+def create_rp():
+    res = create_restore_point()
+    exit(res)
+
+def list_rp():
+    p = list_restore_points()
+    if len(p) > 0:
+        print p
+    else:
+        print("No restore points are available")
+    exit(0)
+
+def rollback():
+    res = rollback_to_point(command_line.point)
+    exit(res)
+
 
 '''
 Print current status of ROSA Freeze to console
