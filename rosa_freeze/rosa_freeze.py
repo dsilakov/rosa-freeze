@@ -99,6 +99,7 @@ Disable freeze mode
 Return Value:
     0 - success
     1 - freeze mode is not enabled
+    2 - failed to detect folder with original state
 '''
 def disable_freeze():
     status = get_status()
@@ -108,6 +109,9 @@ def disable_freeze():
     # Find original root folder and mount it to /tmp/sysroot-orig
     orig_root = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-ro").read().rstrip()
     os.system("mkdir -p /tmp/sysroot-orig")
+    if orig_root == '':
+        return 2
+
     os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig")
     # Prepare for chrooting into sysroot-orig
     os.system("mount -o bind /dev /tmp/sysroot-orig/dev")
@@ -176,10 +180,10 @@ Possible return values:
 '''
 def get_status():
     aufs_enabled = os.system("grep GRUB_CMDLINE_LINUX_DEFAULT " + grub_cfg_name + " | grep -q aufs_root")
-    if aufs_enabled == 0:
+    aufs_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
+    if aufs_enabled && aufs_mounted == 0:
         return 'enabled'
     else:
-        aufs_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
         if aufs_mounted == 0:
             return 'disabled_pending'
         else:
