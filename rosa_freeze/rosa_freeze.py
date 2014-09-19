@@ -18,6 +18,8 @@ import time
 grub_cfg_name = '/etc/default/grub'
 grub_tmp_cfg_name = '/etc/default/grub.new'
 
+rfreeze_config = '/etc/rfreeze.conf'
+
 #########################
 # Top-level functions:
 #   * enable_freeze
@@ -99,7 +101,6 @@ Disable freeze mode
 Return Value:
     0 - success
     1 - freeze mode is not enabled
-    2 - failed to detect folder with original state
 '''
 def disable_freeze():
     status = get_status()
@@ -109,9 +110,6 @@ def disable_freeze():
     # Find original root folder and mount it to /tmp/sysroot-orig
     orig_root = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-ro").read().rstrip()
     os.system("mkdir -p /tmp/sysroot-orig")
-    if orig_root == '':
-        return 2
-
     os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig")
     # Prepare for chrooting into sysroot-orig
     os.system("mount -o bind /dev /tmp/sysroot-orig/dev")
@@ -180,10 +178,10 @@ Possible return values:
 '''
 def get_status():
     aufs_enabled = os.system("grep GRUB_CMDLINE_LINUX_DEFAULT " + grub_cfg_name + " | grep -q aufs_root")
-    aufs_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
-    if aufs_enabled && aufs_mounted == 0:
+    if aufs_enabled == 0:
         return 'enabled'
     else:
+        aufs_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
         if aufs_mounted == 0:
             return 'disabled_pending'
         else:
@@ -203,12 +201,14 @@ def create_restore_point(folder=""):
     if status != 'enabled':
         return 1
 
+    storage_type = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-rw").read().rstrip()
+    if storage_type == "tmpfs":
+        return 2
+
     if folder == "":
-        storage_type = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-rw").read().rstrip()
-        if storage_type == "tmpfs":
-            return 2
-        else:
-            folder = "/tmp/sysroot-orig/restore_points"
+        folder = "/tmp/sysroot-orig/restore_points"
+    else:
+	folder = "/tmp/sysroot-orig" + folder
 
     # Append current timestamp to folder
     folder = folder + "/" + str(int(time.time()))
@@ -220,7 +220,12 @@ def create_restore_point(folder=""):
 Get available restore points
 '''
 def list_restore_points(folder=""):
-    return []
+    points = []
+    for d in os.listdir(folder):
+        if os.path.isdir(folder + "/" + d):
+            points.append(d)
+
+    return points
 
 '''
 Rollback to a given restore point

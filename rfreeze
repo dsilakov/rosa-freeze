@@ -10,12 +10,16 @@
 #
 
 import argparse
+import datetime
 import os
 import re
 import sys
 import shutil
 
 from rosa_freeze.rosa_freeze import *
+from rosa_freeze.config import Config
+
+cfg = Config()
 
 # List of root folders that are not mounted over aufs
 default_skip_dirs = ['dev', 'home', 'lost+found', 'media', 'mnt', 'proc', 'run', 'sys', 'tmp']
@@ -124,13 +128,15 @@ def merge():
     exit(res)
 
 def create_rp():
-    res = create_restore_point()
+    res = create_restore_point(cfg['restore_points']['folder'])
     exit(res)
 
 def list_rp():
-    p = list_restore_points()
+    p = list_restore_points(cfg['restore_points']['folder'])
     if len(p) > 0:
-        print p
+        print("The following restore points are available:")
+        for point in p:
+            print( "* " + point + " (" + datetime.datetime.fromtimestamp(int(point)).strftime("%Y-%m-%d %H:%M:%S") + ")" )
     else:
         print("No restore points are available")
     exit(0)
