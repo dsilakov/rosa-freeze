@@ -178,10 +178,10 @@ Possible return values:
 '''
 def get_status():
     aufs_enabled = os.system("grep GRUB_CMDLINE_LINUX_DEFAULT " + grub_cfg_name + " | grep -q aufs_root")
-    if aufs_enabled == 0:
+    aufs_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
+    if aufs_enabled == 0 and aufs_mounted == 0:
         return 'enabled'
     else:
-        aufs_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
         if aufs_mounted == 0:
             return 'disabled_pending'
         else:
