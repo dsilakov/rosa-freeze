@@ -1,0 +1,177 @@
+# Translation of rosa-freeze messages to Russian
+# Copyright (C) 2014 ROSA
+msgid ""
+msgstr ""
+"Project-Id-Version: ru\n"
+"Report-Msgid-Bugs-To: denis.silakov@rosalab.ru\n"
+"POT-Creation-Date: 2014-09-29 17:14+0400\n"
+"PO-Revision-Date: 2014-09-29 17:14+0400\n"
+"Last-Translator: Denis Silakov <denis.silakov@rosalab.ru>\n"
+"MIME-Version: 1.0\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../rosa_freeze/config.py:57
+#, python-format
+msgid "error in config \"%(path)s\": %(exception)s"
+msgstr "ошибка в файле конфигурации \"%(path)s\": %(exception)s"
+
+#: ../rfreeze:32
+msgid "ROSA Freeze Configuration Tool"
+msgstr "Инструментарий настройки ROSA Freeze"
+
+#: ../rfreeze:38
+msgid "Enable Freeze mode"
+msgstr "Включить режим заморозки"
+
+#: ../rfreeze:39
+msgid ""
+"Folders to be skipped, separated by colon, without leading slash (e.g., home:"
+"media:mnt)"
+msgstr ""
+"Директории, которые не надо замораживать, разделенные двоеточием, без слэша в начале "
+"(например, home:media:mnt)"
+
+#: ../rfreeze:41
+msgid ""
+"Device to be used as a temporary storage for filesystem modifications. By "
+"default, ROSA Freeze uses tmpfs. With this option you can specify device "
+"partinion (e.g., /dev/sda1) to be used for this purposes. Rememeber that the "
+"storage device should not contain any valuable data, since all the data on "
+"it will be removed!"
+msgstr ""
+"Устройство для использования в качестве временного хранилища модификаций файловой системы. "
+"По умолчанию, ROSA Freeze использует tmpfs. С помощью этой опции, вы можете указать раздел "
+"жесткого диска (например, /dev/sda1), который будет использован для этих целей. Все данные на "
+"этом разделе будут уничтожены! "
+
+#: ../rfreeze:44
+msgid ""
+"Folder to be used as a temporary storage for filesystem modifications. By "
+"default, ROSA Freeze uses tmpfs. With this option you can specify a folder "
+"to be used for this purposes. The folder should be a top-level one (e.g. /"
+"rosa-freeze) or be located inside a folder which is not subjected to the "
+"freeze."
+msgstr ""
+"Директория для использования в качестве временного хранилища модификаций файловой системы. "
+"По умолчанию, ROSA Freeze использует tmpfs. С помощью этой опции, вы можете указать директорию, "
+"которая будет использована для этих целей. Допускается использование директорий верхнего уровня "
+"либо других директорий, находящихся в папках, которые не будут заморожены. "
+
+#: ../rfreeze:50
+msgid "Disable Freeze mode"
+msgstr "Отключить режим заморозки"
+
+#: ../rfreeze:54
+msgid "Get ROSA Freeze status"
+msgstr "Узнать текущий статус заморозки"
+
+#: ../rfreeze:58
+msgid "Merge current system state into the original one"
+msgstr "Сделать текущее состояние системы базовым"
+
+#: ../rfreeze:62
+msgid ""
+"Create restore point save original state of the system and then merge the "
+"current system state into the original"
+msgstr ""
+"Создать точку отката - сохранить исходное базовое состояние системы и перенести в него все текущие изменения, "
+"предусмотрев возможность отката"
+
+#: ../rfreeze:66
+msgid "Get list of restore points which can be used for rollback"
+msgstr "Получить список точек, на которые может быть произведен откат"
+
+#: ../rfreeze:70
+msgid "Rollback system to a given restore point"
+msgstr "Откатить систему на заданную точку"
+
+#: ../rfreeze:72
+msgid "restore point (run \"rfreeze list-points\" to get possible values)"
+msgstr "точка отката (запустите \"rfreeze list-points\" для получения доступных точек отката)"
+
+#: ../rfreeze:96
+msgid "Freeze mode has been enabled."
+msgstr "Режим заморозки успешно включен."
+
+#: ../rfreeze:98
+msgid "ROSA Freeze is already enabled."
+msgstr "Режим заморозки уже включен."
+
+#: ../rfreeze:100
+msgid ""
+"You didn't reboot computer after ROSA Freeze was disabled. Please reboot the "
+"machine first."
+msgstr ""
+"Вы не перегружали машину после отключения режима заморозки. Пожалуйста, сначала "
+"перегрузите компьютер."
+
+#: ../rfreeze:102
+msgid "Failed to detect UUID for the storage device "
+msgstr "Не удалось определить UUID для устройства "
+
+#: ../rfreeze:105
+msgid "Storage device is already mounted at "
+msgstr "Устройство хранения изменений уже смонтировано на "
+
+#: ../rfreeze:105
+msgid ". Please make a backup of all data located on it and umount it."
+msgstr ". Пожалуйста, сделайте резервные копии находящихся на нем данных и отмонтируйте его."
+
+#: ../rfreeze:107
+msgid ""
+"Something went wrong when enabling freeze mode, please inform developers..."
+msgstr ""
+"Что-то пошло не так при включении режима заморозки. Пожалуйста, сообщите об этом разработчикам."
+
+#: ../rfreeze:114
+msgid "Freeze mode has been disabled. Please reboot your system."
+msgstr "Режим заморозки отключен. пожалуйста, перезагрузите систему."
+
+#: ../rfreeze:116 ../rfreeze:127
+msgid "You don't have ROSA Freeze enabled."
+msgstr "Режим заморозки отключен."
+
+#: ../rfreeze:118
+msgid ""
+"Something went wrong when disabling freeze mode, please inform developers..."
+msgstr ""
+"Что-то пошло не так при отключении режима заморозки. Пожалуйста, сообщите об этом разработчикам."
+
+#: ../rfreeze:125
+msgid "The current state of the system has been merged to the original one."
+msgstr "Базовое состояние системы успешно синхронизировано с текущим"
+
+#: ../rfreeze:129
+msgid "Something went wrong during merge, please inform developers..."
+msgstr "Что-то пошло не так при слиянии изменений. Пожалуйста, сообщите об этом разработчикам."
+
+#: ../rfreeze:140
+msgid "The following restore points are available:"
+msgstr "Доступны следующие точки отката:"
+
+#: ../rfreeze:144
+msgid "No restore points are available"
+msgstr "Нет доступных точек отката"
+
+#: ../rfreeze:158
+msgid "Freeze mode is enabled"
+msgstr "Режим заморозки включен"
+
+#: ../rfreeze:160
+msgid "Freeze mode is disabled"
+msgstr "Режим заморозки отключен"
+
+#: ../rfreeze:162
+msgid ""
+"Freeze mode has been disabled, but you need to reboot to work with unfrozen "
+"system"
+msgstr ""
+"Режим заморозки был отключен, но необходимо перезагрузить систему, чтобы начать "
+"работать с ОС в штатном режиме"
+
+#: ../rfreeze:164
+msgid "INTERNAL ERROR, get_status() returned "
+msgstr "ВНУТРЕННЯЯ ОШИБКА, get_status() вернул "
