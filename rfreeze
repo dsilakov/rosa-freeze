@@ -16,6 +16,9 @@ import re
 import sys
 import shutil
 
+import gettext
+gettext.install('rosa-freeze')
+
 from rosa_freeze.rosa_freeze import *
 from rosa_freeze.config import Config
 
@@ -26,47 +29,47 @@ default_skip_dirs = ['dev', 'home', 'lost+found', 'media', 'mnt', 'proc', 'run',
 
 def parse_command_line():
     global command_line
-    parser = argparse.ArgumentParser(description='ROSA Freeze Configuration Tool')
+    parser = argparse.ArgumentParser(description=_('ROSA Freeze Configuration Tool'))
 #    parser.add_argument('-v', '--verbose', action='store_true', help='be verbose, display even debug messages')
 #    parser.add_argument('-q', '--quiet', action='store_true', help='Do not display info messages')
     subparsers = parser.add_subparsers(title='command')
 
     # Enable freeze
-    parser_enable = subparsers.add_parser('enable', help='Enable Freeze mode')
-    parser_enable.add_argument('-d', '--skip_dirs', action='store', nargs="?", help='Folders to be skipped, separated by colon, without leading slash (e.g., home:media:mnt)')
+    parser_enable = subparsers.add_parser('enable', help=_('Enable Freeze mode'))
+    parser_enable.add_argument('-d', '--skip_dirs', action='store', nargs="?", help=_('Folders to be skipped, separated by colon, without leading slash (e.g., home:media:mnt)'))
     storage_group = parser_enable.add_mutually_exclusive_group()
-    storage_group.add_argument('-s', '--storage', action='store', nargs="?", help='Device to be used as a temporary storage for filesystem modifications. '
+    storage_group.add_argument('-s', '--storage', action='store', nargs="?", help=_('Device to be used as a temporary storage for filesystem modifications. '
 	'By default, ROSA Freeze uses tmpfs. With this option you can specify device partinion (e.g., /dev/sda1) to be used for this purposes. '
-	'Rememeber that the storage device should not contain any valuable data, since all the data on it will be removed!')
-    storage_group.add_argument('-f', '--folder', action='store', nargs="?", help='Folder to be used as a temporary storage for filesystem modifications. '
+	'Rememeber that the storage device should not contain any valuable data, since all the data on it will be removed!'))
+    storage_group.add_argument('-f', '--folder', action='store', nargs="?", help=_('Folder to be used as a temporary storage for filesystem modifications. '
 	'By default, ROSA Freeze uses tmpfs. With this option you can specify a folder to be used for this purposes. '
-	'The folder should be a top-level one (e.g. /rosa-freeze) or be located inside a folder which is not subjected to the freeze.')
+	'The folder should be a top-level one (e.g. /rosa-freeze) or be located inside a folder which is not subjected to the freeze.'))
     parser_enable.set_defaults(func=enable)
 
     # Disable freeze
-    parser_disable = subparsers.add_parser('disable', help='Disable Freeze mode')
+    parser_disable = subparsers.add_parser('disable', help=_('Disable Freeze mode'))
     parser_disable.set_defaults(func=disable)
 
     # Get status
-    parser_status = subparsers.add_parser('status', help='Get ROSA Freeze status')
+    parser_status = subparsers.add_parser('status', help=_('Get ROSA Freeze status'))
     parser_status.set_defaults(func=print_status)
 
     # Merge current system state into the original one
-    parser_merge = subparsers.add_parser('merge', help='Merge current system state into the original one')
+    parser_merge = subparsers.add_parser('merge', help=_('Merge current system state into the original one'))
     parser_merge.set_defaults(func=merge)
 
     # Create restore point
-    parser_create_rp = subparsers.add_parser('save-point', help='Create restore point save original state of the system and then merge the current system state into the original')
+    parser_create_rp = subparsers.add_parser('save-point', help=_('Create restore point save original state of the system and then merge the current system state into the original'))
     parser_create_rp.set_defaults(func=create_rp)
 
     # List restore points
-    parser_list_rp = subparsers.add_parser('list-points', help='Get list of restore points which can be used for rollback')
+    parser_list_rp = subparsers.add_parser('list-points', help=_('Get list of restore points which can be used for rollback'))
     parser_list_rp.set_defaults(func=list_rp)
 
     # Rollback to restore point
-    parser_rollback = subparsers.add_parser('rollback', help='Rollback system to a given restore point')
+    parser_rollback = subparsers.add_parser('rollback', help=_('Rollback system to a given restore point'))
     parser_rollback.set_defaults(func=rollback)
-    parser_rollback.add_argument('point', action='store', help='restore point (run "rfreeze list-points" to get possible values)')
+    parser_rollback.add_argument('point', action='store', help=_('restore point (run "rfreeze list-points" to get possible values)'))
 
     command_line = parser.parse_args(sys.argv[1:])
 
@@ -90,40 +93,40 @@ def enable():
 
     res = enable_freeze(skip_dirs, storage, folder)
     if res == 0:
-        print "Freeze mode has been enabled."
+        print(_("Freeze mode has been enabled."))
     elif res == 2:
-        print "ROSA Freeze is already enabled."
+        print(_("ROSA Freeze is already enabled."))
     elif res == 3:
-        print "You didn't reboot computer after ROSA Freeze was disabled. Please reboot the machine first."
+        print(_("You didn't reboot computer after ROSA Freeze was disabled. Please reboot the machine first."))
     elif res == 4:
-        print "Failed to detect UUID for the storage device " + storage
+        print(_("Failed to detect UUID for the storage device ") + storage)
     elif res == 5:
         storage_mnt = os.popen("findmnt -n -o TARGET " + storage).read().rstrip()
-        print "Storage device is already mounted at " + storage_mnt + ". Please make a backup of all data located on it and umount it."
+        print(_("Storage device is already mounted at ") + storage_mnt + _(". Please make a backup of all data located on it and umount it."))
     else:
-	print "Something went wrong when enabling freeze mode, please inform developers..."
+	print(_("Something went wrong when enabling freeze mode, please inform developers..."))
 
     exit(res)
 
 def disable():
     res = disable_freeze()
     if res == 0:
-        print "Freeze mode has been disabled. Please reboot your system."
+        print(_("Freeze mode has been disabled. Please reboot your system."))
     elif res == 1:
-	print "You don't have ROSA Freeze enabled."
+	print(_("You don't have ROSA Freeze enabled."))
     else:
-	print "Something went wrong when disabling freeze mode, please inform developers..."
+	print(_("Something went wrong when disabling freeze mode, please inform developers..."))
 
     exit(res)
 
 def merge():
     res = merge_state()
     if res == 0:
-        print "The current state of the system has been merged to the original one."
+        print(_("The current state of the system has been merged to the original one."))
     elif res == 1:
-	print "You don't have ROSA Freeze enabled."
+	print(_("You don't have ROSA Freeze enabled."))
     else:
-	print "Something went wrong during merge, please inform developers..."
+	print(_("Something went wrong during merge, please inform developers..."))
 
     exit(res)
 
@@ -134,11 +137,11 @@ def create_rp():
 def list_rp():
     p = list_restore_points(cfg['restore_points']['folder'])
     if len(p) > 0:
-        print("The following restore points are available:")
+        print(_("The following restore points are available:"))
         for point in p:
             print( "* " + point + " (" + datetime.datetime.fromtimestamp(int(point)).strftime("%Y-%m-%d %H:%M:%S") + ")" )
     else:
-        print("No restore points are available")
+        print(_("No restore points are available"))
     exit(0)
 
 def rollback():
@@ -152,13 +155,13 @@ Print current status of ROSA Freeze to console
 def print_status():
     status = get_status()
     if status == 'enabled':
-        print "Freeze mode is enabled"
+        print(_("Freeze mode is enabled"))
     elif status == 'disabled':
-        print "Freeze mode is disabled"
+        print(_("Freeze mode is disabled"))
     elif status == 'disabled_pending':
-        print "Freeze mode has been disabled, but you need to reboot to work with unfrozen system"
+        print(_("Freeze mode has been disabled, but you need to reboot to work with unfrozen system"))
     else:
-        print "INTERNAL ERROR, get_status() returned " + status
+        print(_("INTERNAL ERROR, get_status() returned ") + status)
 
 
 if __name__ == '__main__':

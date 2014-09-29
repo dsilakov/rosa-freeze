@@ -7,7 +7,7 @@ import fcntl
 # USAGE:
 #
 # from rosa_freeze.config import Config
-# 
+#
 # cfg = Config()
 # cfg['aaa']['bbb'] = 'ccc'
 # print cfg['aaa']['bbb']
@@ -54,12 +54,8 @@ class Section(dict):
         try:
             res = self.config.get(self.section, key)
         except ConfigParser.NoOptionError, ex:
-            if key == 'default_branch':
-                print 'non-critical error in config "%s": %s' % (self.conf_path, str(ex))
-                return ''
-            else:
-                print 'error in config "%s": %s' % (self.conf_path, str(ex))
-                exit(1)
+            print(_('error in config "%(path)s": %(exception)s') % (self.conf_path, str(ex)))
+            exit(1)
 
 class Config(dict):
     default_freeze_type = 'folder'
