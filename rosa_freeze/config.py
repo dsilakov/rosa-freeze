@@ -54,7 +54,7 @@ class Section(dict):
         try:
             res = self.config.get(self.section, key)
         except ConfigParser.NoOptionError, ex:
-            print(_('error in config "%(path)s": %(exception)s') % (self.conf_path, str(ex)))
+            print(_('error in config "%(path)s": %(exception)s') % {'path': self.conf_path, 'exception': str(ex)})
             exit(1)
 
 class Config(dict):
