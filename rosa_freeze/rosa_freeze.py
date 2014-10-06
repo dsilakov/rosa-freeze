@@ -290,6 +290,11 @@ def _enable_freeze_dracut(uuid, skip_dirs, folder):
     grub_new_cfg = open(grub_tmp_cfg_name, 'w')
     dracut_skip_dirs = ":".join(skip_dirs)
 
+    # Check if initrd already contains aufs-mount
+    aufs_mount_absent = os.system("lsinitrd | grep -q aufs-mount")
+    if aufs_mount_absent:
+        os.system('dracut -f /boot/initrd-$(uname -r).img $(uname -r)')
+
     for line in grub_cfg:
         if line.startswith('GRUB_CMDLINE_LINUX_DEFAULT'):
             line = re.sub(r'([\'"]\s*)$', r' rfreeze_skip_dirs=' + dracut_skip_dirs + r' aufs_root=UUID=\1', line)
