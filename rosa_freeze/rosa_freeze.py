@@ -3,7 +3,7 @@
 #
 # Author: Denis Silakov <denis.silakov@rosalab.ru>
 #
-# Copyright (C) 2014 ROSA Company
+# Copyright (C) 2014-2015 ROSA Company
 #
 # Distributed under the BSD license
 #
@@ -172,9 +172,9 @@ def merge_state(backup_folder=""):
 Get current status of ROSA Freeze
 
 Possible return values:
-    * enabled
-    * disabled
-    * disabled_pending (freeze mode was disabled, but the system was not rebooted after that)
+    * 'enabled'
+    * 'disabled'
+    * 'disabled_pending' (freeze mode was disabled, but the system was not rebooted after that)
 '''
 def get_status():
     aufs_enabled = os.system("grep GRUB_CMDLINE_LINUX_DEFAULT " + grub_cfg_name + " | grep -q aufs_root")
@@ -229,9 +229,25 @@ def list_restore_points(folder=""):
 
 '''
 Rollback to a given restore point
+
+Parameters:
+    folder - a fodler with backups of modified/removed files
+
+Return Value:
+    0 - success
+    1 - invalid restore point
+    99 - smth went wrong during os.system run
 '''
-def rollback_to_restore_point(point, folder=""):
-    exit(0)
+def rollback_to_point(point, folder=""):
+    points = list_restore_points(folder)
+    if point not in points:
+        return 1
+
+    for d in os.listdir(folder + '/' + point):
+        if os.system("rsync -avH --delete " + folder + "/" + point + "/" + d + " /" + d):
+            return 99
+
+    return 0
 
 
 ###########################

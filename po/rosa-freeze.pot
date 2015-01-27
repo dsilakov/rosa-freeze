@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-02 16:48+0400\n"
+"POT-Creation-Date: 2015-01-16 06:04-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,8 +68,8 @@ msgstr ""
 
 #: ../rfreeze:62
 msgid ""
-"Create restore point save original state of the system and then merge the "
-"current system state into the original"
+"Create restore point - save original state of the system and then merge the "
+"current system into the original one"
 msgstr ""
 
 #: ../rfreeze:66

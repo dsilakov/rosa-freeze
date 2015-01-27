@@ -4,7 +4,7 @@
 #
 # Author: Denis Silakov <denis.silakov@rosalab.ru>
 #
-# Copyright (C) 2014 ROSA Company
+# Copyright (C) 2014-2015 ROSA Company
 #
 # Distributed under the BSD license
 #
@@ -59,7 +59,7 @@ def parse_command_line():
     parser_merge.set_defaults(func=merge)
 
     # Create restore point
-    parser_create_rp = subparsers.add_parser('save-point', help=_('Create restore point save original state of the system and then merge the current system state into the original'))
+    parser_create_rp = subparsers.add_parser('save-point', help=_('Create restore point - save original state of the system and then merge the current system into the original one'))
     parser_create_rp.set_defaults(func=create_rp)
 
     # List restore points
@@ -145,7 +145,7 @@ def list_rp():
     exit(0)
 
 def rollback():
-    res = rollback_to_point(command_line.point)
+    res = rollback_to_point(command_line.point, cfg['restore_points']['folder'])
     exit(res)
 
 

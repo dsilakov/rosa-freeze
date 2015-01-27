@@ -1,10 +1,10 @@
 # Translation of rosa-freeze messages to Russian
-# Copyright (C) 2014 ROSA
+# Copyright (C) 2014-2015 ROSA
 msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-02 16:48+0400\n"
+"POT-Creation-Date: 2015-01-16 06:04-0500\n"
 "PO-Revision-Date: 2014-09-29 17:14+0400\n"
 "Last-Translator: Denis Silakov <denis.silakov@rosalab.ru>\n"
 "Language-Team: Russian\n"
@@ -76,8 +76,8 @@ msgstr "Сделать текущее состояние системы базо
 
 #: ../rfreeze:62
 msgid ""
-"Create restore point save original state of the system and then merge the "
-"current system state into the original"
+"Create restore point - save original state of the system and then merge the "
+"current system into the original one"
 msgstr ""
 "Создать точку отката - сохранить исходное базовое состояние системы и "
 "перенести в него все текущие изменения, предусмотрев возможность отката"
