@@ -62,6 +62,7 @@ class Config(dict):
     default_freeze_folder = '/rfreeze'
     default_freeze_device = ''
     default_restore_point_folder = '/restore_points'
+    default_skip_dirs = 'dev home lost+found media mnt proc run sys tmp'
 
     def __init__(self, conf_path='/etc/rfreeze.cfg', main_conf=True):
         self.conf_path = os.path.expanduser(conf_path)
@@ -80,6 +81,9 @@ class Config(dict):
             for opt in opts:
                 super(Section, self[section]).__setitem__(opt, self.config.get(section, opt))
 
+        # BAckward compatibility - "skip_dirs" was absent in old configs
+        if "skip_dirs" not in self['freeze']:
+            self['freeze']['skip_dirs'] = Config.default_skip_dirs
 
         if init and main_conf:
             self.first_start()
@@ -96,7 +100,8 @@ class Config(dict):
         return super(Config, self).__getitem__(key)
 
     def first_start(self):
-        self['freeze']['type'] = Config.default_freeze_type
+        self['freeze']['type']   = Config.default_freeze_type
         self['freeze']['device'] = Config.default_freeze_device
         self['freeze']['folder'] = Config.default_freeze_folder
+        self['freeze']['skip_dirs'] = Config.default_skip_dirs
         self['restore_points']['folder'] = Config.default_restore_point_folder

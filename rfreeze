@@ -24,9 +24,6 @@ from rosa_freeze.config import Config
 
 cfg = Config()
 
-# List of root folders that are not mounted over aufs
-default_skip_dirs = ['dev', 'home', 'lost+found', 'media', 'mnt', 'proc', 'run', 'sys', 'tmp']
-
 def parse_command_line():
     global command_line
     parser = argparse.ArgumentParser(description=_('ROSA Freeze Configuration Tool'))
@@ -81,7 +78,7 @@ def enable():
     if command_line.skip_dirs:
 	skip_dirs = command_line.skip_dirs.split(":")
     else:
-	skip_dirs = default_skip_dirs
+	skip_dirs = cfg['freeze']['skip_dirs'].split()
 
     storage = "tmpfs"
     folder = ""
