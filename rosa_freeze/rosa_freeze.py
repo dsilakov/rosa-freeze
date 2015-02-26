@@ -14,6 +14,7 @@ import re
 import sys
 import shutil
 import time
+import subprocess
 
 grub_cfg_name = '/etc/default/grub'
 grub_tmp_cfg_name = '/etc/default/grub.new'
