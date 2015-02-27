@@ -75,13 +75,25 @@ Wrappers for functions from rosa_freeze module that
 print human-readable messages
 '''
 def enable():
+    # Take default freeze parameters from config,
+    # override with command-line settings, if any
     if command_line.skip_dirs:
 	skip_dirs = command_line.skip_dirs.split(":")
     else:
 	skip_dirs = cfg['freeze']['skip_dirs'].split()
 
-    storage = "tmpfs"
-    folder = ""
+    storage = cfg['freeze']['type']
+    if storage == 'folder':
+        folder = cfg['freeze']['folder']
+    elif storage == 'tmpfs':
+        folder = ""
+    elif storage == 'device':
+        folder = ""
+        storage = cfg['freeze']['device']
+    else:
+        print(_("Unsupported storage type in config: ") + storage)
+        exit(1)
+
     if command_line.storage:
 	storage = command_line.storage
     elif command_line.folder:
