@@ -355,6 +355,6 @@ def _detect_folders_to_skip(skip_dirs):
             dir_mnt = os.popen("findmnt -n -o TARGET /" + d).read().rstrip()
             if dir_mnt:
                 more_dirs.append(d)
-                print "NOTE: '" + d + "' folder is mounted from another partition, it will not be frozen"
+                print(_("NOTE: '%s' folder is mounted from another partition, it will not be frozen") % d)
 
     return more_dirs
