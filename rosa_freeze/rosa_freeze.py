@@ -259,14 +259,8 @@ def rollback_to_point(point, folder=""):
 Modify dracut parameters in grub config - drop aufs_root
 '''
 def _disable_freeze_dracut(chroot=""):
-    try:
-        # /boot is protected
-        grub_cfg = open(chroot + grub_cfg_name, 'r')
-        grub_new_cfg = open(chroot + grub_tmp_cfg_name, 'w')
-    except:
-        # /boot is skipped
-        grub_cfg = open(grub_cfg_name, 'r')
-        grub_new_cfg = open(grub_tmp_cfg_name, 'w')
+    grub_cfg = open(chroot + grub_cfg_name, 'r')
+    grub_new_cfg = open(chroot + grub_tmp_cfg_name, 'w')
 
     for line in grub_cfg:
         if line.startswith('GRUB_CMDLINE_LINUX_DEFAULT'):
@@ -276,12 +270,7 @@ def _disable_freeze_dracut(chroot=""):
         grub_new_cfg.write(line)
     grub_new_cfg.close()
 
-    try:
-        # /boot is protected
-        shutil.move(chroot + grub_tmp_cfg_name, chroot + grub_cfg_name)
-    except:
-        # /boot is skipped
-        shutil.move(grub_tmp_cfg_name, grub_cfg_name)
+    shutil.move(chroot + grub_tmp_cfg_name, chroot + grub_cfg_name)
 
 
 '''
