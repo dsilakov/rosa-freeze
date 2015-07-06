@@ -20,6 +20,7 @@ grub_cfg_name = '/etc/default/grub'
 grub_tmp_cfg_name = '/etc/default/grub.new'
 
 rfreeze_config = '/etc/rfreeze.conf'
+modulename = 'overlay'
 
 #########################
 # Top-level functions:
@@ -78,18 +79,18 @@ def enable_freeze(skip_dirs, storage, folder=""):
 	if storage_mnt:
 	    return 5
 
-    # For safety - load aufs module
-    if os.system("modprobe aufs"):
+    # For safety - load module
+    if os.system("modprobe " + modulename):
         return 99
 
-    # Enable aufs mounting for root in dracut
+    # Enable filesystem mounting for root in dracut
     _enable_freeze_dracut(uuid, skip_dirs, folder)
 
-    # Make sure that aufs kernel module is loaded at boot time
-    if not os.path.isfile('/etc/modules-load.d/aufs.conf'):
-        aufs_conf = open('/etc/modules-load.d/aufs.conf', 'w')
-        aufs_conf.write('aufs\n')
-        aufs_conf.close()
+    # Make sure that kernel module is loaded at boot time
+    if not os.path.isfile('/etc/modules-load.d/' + modulename + '.conf'):
+        union_conf = open('/etc/modules-load.d/' + modulename + '.conf', 'w')
+        union_conf.write(modulename + '\n')
+        union_conf.close()
 
     # Finally, let's enter freeze mode right now
     _enable_freeze_now(skip_dirs, storage, folder)
@@ -178,12 +179,12 @@ Possible return values:
     * 'disabled_pending' (freeze mode was disabled, but the system was not rebooted after that)
 '''
 def get_status():
-    aufs_enabled = os.system("grep GRUB_CMDLINE_LINUX_DEFAULT " + grub_cfg_name + " | grep -q aufs_root")
-    aufs_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
-    if aufs_enabled == 0 and aufs_mounted == 0:
+    union_enabled = os.system("grep GRUB_CMDLINE_LINUX_DEFAULT " + grub_cfg_name + " | grep -q " + modulename + "_root")
+    union_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
+    if union_enabled == 0 and union_mounted == 0:
         return 'enabled'
     else:
-        if aufs_mounted == 0:
+        if union_mounted == 0:
             return 'disabled_pending'
         else:
             return 'disabled'
@@ -261,7 +262,7 @@ def rollback_to_point(point, folder=""):
 ###########################
 
 '''
-Modify dracut parameters in grub config - drop aufs_root
+Modify dracut parameters in grub config - drop root
 '''
 def _disable_freeze_dracut(chroot=""):
     try:
@@ -275,8 +276,8 @@ def _disable_freeze_dracut(chroot=""):
 
     for line in grub_cfg:
         if line.startswith('GRUB_CMDLINE_LINUX_DEFAULT'):
-            line = re.sub(r' aufs_root=UUID=[\S]*([\'" ])', r'\1', line)
-            line = re.sub(r' aufs_root=DIR=[\S]*([\'" ])', r'\1', line)
+            line = re.sub(r'%s_root=UUID=[\S]*([\'" ])' % modulename, r'\1', line)
+            line = re.sub(r'%s_root=DIR=[\S]*([\'" ])' % modulename, r'\1', line)
             line = re.sub(r' rfreeze_skip_dirs=[\S]*([\'" ])', r'\1', line)
         grub_new_cfg.write(line)
     grub_new_cfg.close()
@@ -312,30 +313,34 @@ def _enable_freeze_now(skip_dirs, storage, folder=""):
             else:
                 os.system("mkdir -m 755 -p /tmp/sysroot-rw/" + d)
 
-            if os.system("mount -n -t aufs -o nowarn_perm,noatime,xino=/tmp/xinos/" + d + ".xino.aufs,dirs=/tmp/sysroot-rw/" + d + "=rw:/" + d + "=rr none /" + d):
-                return 99
+	    if modulename == 'aufs':
+            	if os.system("mount -n -t aufs -o nowarn_perm,noatime,xino=/tmp/xinos/" + d + ".xino.aufs,dirs=/tmp/sysroot-rw/" + d + "=rw:/" + d + "=rr none /" + d):
+                    return 99
+	    elif modulename == 'overlay':
+	    	if os.system("mkdir -p /tmp/workdir/" + d + "; mount -n -t overlay -o upperdir=/tmp/sysroot-rw/" + d + ",lowerdir=" + d + ",workdir=/tmp/workdir/" + d + " none /" + d):
+                    return 99
 
 '''
-Modify dracut parameters in grub config - add aufs_root
+Modify dracut parameters in grub config - add root
 '''
 def _enable_freeze_dracut(uuid, skip_dirs, folder):
     grub_cfg = open(grub_cfg_name, 'r')
     grub_new_cfg = open(grub_tmp_cfg_name, 'w')
     dracut_skip_dirs = ":".join(skip_dirs)
 
-    # Check if initrd already contains aufs-mount
+    # Check if initrd already contains union-mount
     lsinitrd = subprocess.check_output(('lsinitrd'))
-    aufs_mount_present = lsinitrd.find("aufs_mount") >= 0
-    if not aufs_mount_present:
+    union_mount_present = lsinitrd.find("union_mount") >= 0
+    if not union_mount_present:
         os.system('dracut -f /boot/initrd-$(uname -r).img $(uname -r)')
 
     for line in grub_cfg:
         if line.startswith('GRUB_CMDLINE_LINUX_DEFAULT'):
-            line = re.sub(r'([\'"]\s*)$', r' rfreeze_skip_dirs=' + dracut_skip_dirs + r' aufs_root=UUID=\1', line)
+            line = re.sub(r'([\'"]\s*)$', r' rfreeze_skip_dirs=%s %s_root=UUID=\1' % (dracut_skip_dirs,modulename), line)
             if uuid:
-                line = line.replace("aufs_root=UUID=", "aufs_root=UUID=" + uuid)
+                line = line.replace(modulename + "_root=UUID=",modulename +  "_root=UUID=" + uuid)
             elif folder:
-                line = line.replace("aufs_root=UUID=", "aufs_root=DIR=" + folder)
+                line = line.replace(modulename + "_root=UUID=", modulename +  "_root=DIR=" + folder)
         grub_new_cfg.write(line)
     grub_new_cfg.close()
 
