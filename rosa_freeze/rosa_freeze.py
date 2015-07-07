@@ -317,7 +317,7 @@ def _enable_freeze_now(skip_dirs, storage, folder=""):
             	if os.system("mount -n -t aufs -o nowarn_perm,noatime,xino=/tmp/xinos/" + d + ".xino.aufs,dirs=/tmp/sysroot-rw/" + d + "=rw:/" + d + "=rr none /" + d):
                     return 99
 	    elif modulename == 'overlay':
-	    	if os.system("mkdir -p /tmp/workdir/" + d + "; mount -n -t overlay -o upperdir=/tmp/sysroot-rw/" + d + ",lowerdir=" + d + ",workdir=/tmp/workdir/" + d + " none /" + d):
+	    	if os.system("mkdir -p /tmp/sysroot-rw/workdir/" + d + "; mount -n -t overlay -o upperdir=/tmp/sysroot-rw/" + d + ",lowerdir=/" + d + ",workdir=/tmp/sysroot-rw/workdir/" + d + " none /" + d):
                     return 99
 
 '''
