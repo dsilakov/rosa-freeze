@@ -110,9 +110,10 @@ def disable_freeze():
         return 1
 
     # Find original root folder and mount it to /tmp/sysroot-orig
-    orig_root = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-ro").read().rstrip()
+    #orig_root = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-ro").read().rstrip()
     os.system("mkdir -p /tmp/sysroot-orig")
-    os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig")
+    #os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig")
+    os.system("mount -o bind / /tmp/sysroot-orig")
     # Prepare for chrooting into sysroot-orig
     os.system("mount -o bind /dev /tmp/sysroot-orig/dev")
     os.system("mount -o bind /dev/pts /tmp/sysroot-orig/dev/pts")
@@ -140,16 +141,18 @@ Return Value:
     1 - freeze mode is not enabled
     99 - smth went wrong during os.system run
 '''
-def merge_state(backup_folder=""):
+def merge_state(backup_folder="",skip_dirs="workdir"):
     status = get_status()
     if status != 'enabled':
         return 1
 
     # Find original root device and mount it to /tmp/sysroot-orig
-    orig_root = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-ro").read().rstrip()
+    #orig_root = os.popen("findmnt -n -o SOURCE --target /tmp/sysroot-ro").read().rstrip()
+
     if os.system("mkdir -p /tmp/sysroot-orig"):
         return 99
-    if os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig"):
+    #if os.system("mount -o rw " + orig_root + " /tmp/sysroot-orig"):
+    if os.system("mount -o bind / /tmp/sysroot-orig"):
         return 99
 
     backup_params = ""
@@ -161,8 +164,9 @@ def merge_state(backup_folder=""):
     # are originally mounted from different partitions
     # (e.g., /var on separate partinion is not supported)
     for d in os.listdir('/tmp/sysroot-rw/'):
-        if os.system("rsync -avH --delete " + backup_params + " /" + d + " /tmp/sysroot-orig"):
-            return 99
+        if os.path.isdir("/tmp/sysroot-rw/" + d) and d not in skip_dirs:
+	    if os.system("rsync -avH --delete " + backup_params + " /" + d + " /tmp/sysroot-orig"):
+		return 99
 
     # Cleanup
 #    os.system("umount /tmp/sysroot-orig")
@@ -296,12 +300,10 @@ Enter freeze mode in a running system
 def _enable_freeze_now(skip_dirs, storage, folder=""):
     os.system("mkdir -p /tmp/xinos")
     os.system("mkdir -p /tmp/sysroot-rw")
-    os.system("mkdir -p /tmp/sysroot-ro")
-    os.system("mount -o bind / /tmp/sysroot-ro")
-    if storage == "tmpfs":
+    #os.system("mkdir -p /tmp/sysroot-ro")
+    #os.system("mount -o bind / /tmp/sysroot-ro")
+    if storage == "tmpfs" or storage == "folder":
 	os.system("mount -n -t tmpfs tmpfs /tmp/sysroot-rw")
-    elif storage == "folder":
-        os.system("mount -o bind " + folder + " /tmp/sysroot-rw")
     else:
 	os.system("mount -n " + storage + " /tmp/sysroot-rw")
 
