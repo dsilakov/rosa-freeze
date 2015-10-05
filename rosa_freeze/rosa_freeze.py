@@ -239,6 +239,15 @@ def list_restore_points(folder=""):
     return points
 
 '''
+Clean given (or all) restore points
+'''
+def clean_restore_points(folder, last_date=None):
+    for d in os.listdir(folder):
+	if last_date is None or int(d) <= last_date:
+    	    shutil.rmtree(folder + "/" + d)
+
+
+'''
 Rollback to a given restore point
 
 Parameters:

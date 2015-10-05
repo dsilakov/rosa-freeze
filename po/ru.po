@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-17 13:43+0300\n"
+"POT-Creation-Date: 2015-10-05 16:24+0300\n"
 "PO-Revision-Date: 2014-09-29 17:14+0400\n"
 "Last-Translator: Denis Silakov <denis.silakov@rosalab.ru>\n"
 "Language-Team: Russian\n"
@@ -18,12 +18,13 @@ msgstr ""
 msgid "error in config \"%(path)s\": %(exception)s"
 msgstr "ошибка в файле конфигурации \"%(path)s\": %(exception)s"
 
-#: ../rosa_freeze/rosa_freeze.py:358
+#: ../rosa_freeze/rosa_freeze.py:379
 #, python-format
 msgid ""
 "NOTE: '%s' folder is mounted from another partition, it will not be frozen"
 msgstr ""
-"ВНИМАНИЕ: директория '%s' смонтирована с отдельного раздела, она не будет заморожена"
+"ВНИМАНИЕ: директория '%s' смонтирована с отдельного раздела, она не будет "
+"заморожена"
 
 #: ../rfreeze:29
 msgid "ROSA Freeze Configuration Tool"
@@ -94,28 +95,36 @@ msgid "Get list of restore points which can be used for rollback"
 msgstr "Получить список точек, на которые может быть произведен откат"
 
 #: ../rfreeze:67
-msgid "Rollback system to a given restore point"
-msgstr "Откатить систему на заданную точку"
+msgid ""
+"Clean restore points - remove all store points starting with given one (i."
+"e., given one and older)"
+msgstr ""
+"Очистить точки отката - удалить все точки, начиная с заданной (т.е. "
+"заданную точку и все точки, которые старше нее)"
 
-#: ../rfreeze:69
+#: ../rfreeze:68 ../rfreeze:74
 msgid "restore point (run \"rfreeze list-points\" to get possible values)"
 msgstr ""
 "точка отката (запустите \"rfreeze list-points\" для получения доступных "
 "точек отката)"
 
-#: ../rfreeze:94
+#: ../rfreeze:72
+msgid "Rollback system to a given restore point"
+msgstr "Откатить систему на заданную точку"
+
+#: ../rfreeze:99
 msgid "Unsupported storage type in config: "
 msgstr "Неподдерживаемый вид хранилища в файое конфигурации: "
 
-#: ../rfreeze:105
+#: ../rfreeze:110
 msgid "Freeze mode has been enabled."
 msgstr "Режим заморозки успешно включен."
 
-#: ../rfreeze:107
+#: ../rfreeze:112
 msgid "ROSA Freeze is already enabled."
 msgstr "Режим заморозки уже включен."
 
-#: ../rfreeze:109
+#: ../rfreeze:114
 msgid ""
 "You didn't reboot computer after ROSA Freeze was disabled. Please reboot the "
 "machine first."
@@ -123,69 +132,69 @@ msgstr ""
 "Вы не перегружали машину после отключения режима заморозки. Пожалуйста, "
 "сначала перегрузите компьютер."
 
-#: ../rfreeze:111
+#: ../rfreeze:116
 msgid "Failed to detect UUID for the storage device "
 msgstr "Не удалось определить UUID для устройства "
 
-#: ../rfreeze:114
+#: ../rfreeze:119
 msgid "Storage device is already mounted at "
 msgstr "Устройство хранения изменений уже смонтировано на "
 
-#: ../rfreeze:114
+#: ../rfreeze:119
 msgid ". Please make a backup of all data located on it and umount it."
 msgstr ""
 ". Пожалуйста, сделайте резервные копии находящихся на нем данных и "
 "отмонтируйте его."
 
-#: ../rfreeze:116
+#: ../rfreeze:121
 msgid ""
 "Something went wrong when enabling freeze mode, please inform developers..."
 msgstr ""
 "Что-то пошло не так при включении режима заморозки. Пожалуйста, сообщите об "
 "этом разработчикам."
 
-#: ../rfreeze:123
+#: ../rfreeze:128
 msgid "Freeze mode has been disabled. Please reboot your system."
 msgstr "Режим заморозки отключен. пожалуйста, перезагрузите систему."
 
-#: ../rfreeze:125 ../rfreeze:136
+#: ../rfreeze:130 ../rfreeze:141
 msgid "You don't have ROSA Freeze enabled."
 msgstr "Режим заморозки отключен."
 
-#: ../rfreeze:127
+#: ../rfreeze:132
 msgid ""
 "Something went wrong when disabling freeze mode, please inform developers..."
 msgstr ""
 "Что-то пошло не так при отключении режима заморозки. Пожалуйста, сообщите об "
 "этом разработчикам."
 
-#: ../rfreeze:134
+#: ../rfreeze:139
 msgid "The current state of the system has been merged to the original one."
 msgstr "Базовое состояние системы успешно синхронизировано с текущим"
 
-#: ../rfreeze:138
+#: ../rfreeze:143
 msgid "Something went wrong during merge, please inform developers..."
 msgstr ""
 "Что-то пошло не так при слиянии изменений. Пожалуйста, сообщите об этом "
 "разработчикам."
 
-#: ../rfreeze:149
+#: ../rfreeze:158
 msgid "The following restore points are available:"
 msgstr "Доступны следующие точки отката:"
 
-#: ../rfreeze:153
+#: ../rfreeze:162
 msgid "No restore points are available"
 msgstr "Нет доступных точек отката"
 
-#: ../rfreeze:167
+#: ../rfreeze:176
 msgid "Freeze mode is enabled"
 msgstr "Режим заморозки включен"
 
-#: ../rfreeze:169
+#: ../rfreeze:178
 msgid "Freeze mode is disabled"
 msgstr "Режим заморозки отключен"
 
-#: ../rfreeze:171
+#: ../rfreeze:180
 msgid ""
 "Freeze mode has been disabled, but you need to reboot to work with unfrozen "
 "system"
@@ -193,6 +202,6 @@ msgstr ""
 "Режим заморозки был отключен, но необходимо перезагрузить систему, чтобы "
 "начать работать с ОС в штатном режиме"
 
-#: ../rfreeze:173
+#: ../rfreeze:182
 msgid "INTERNAL ERROR, get_status() returned "
 msgstr "ВНУТРЕННЯЯ ОШИБКА, get_status() вернул "
