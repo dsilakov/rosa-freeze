@@ -184,7 +184,7 @@ Possible return values:
 '''
 def get_status():
     union_enabled = os.system("grep GRUB_CMDLINE_LINUX " + grub_cfg_name + " | grep -q " + modulename + "_root")
-    union_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
+    union_mounted = os.system("findmnt --target /tmp/sysroot-rw -n | grep -v /dev/mapper > /dev/null")
     if union_enabled == 0 and union_mounted == 0:
         return 'enabled'
     else:
