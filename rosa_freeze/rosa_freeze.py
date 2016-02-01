@@ -183,7 +183,7 @@ Possible return values:
     * 'disabled_pending' (freeze mode was disabled, but the system was not rebooted after that)
 '''
 def get_status():
-    union_enabled = os.system("grep GRUB_CMDLINE_LINUX_DEFAULT " + grub_cfg_name + " | grep -q " + modulename + "_root")
+    union_enabled = os.system("grep GRUB_CMDLINE_LINUX " + grub_cfg_name + " | grep -q " + modulename + "_root")
     union_mounted = os.system("findmnt --target /tmp/sysroot-rw -n >/dev/null")
     if union_enabled == 0 and union_mounted == 0:
         return 'enabled'
@@ -288,7 +288,7 @@ def _disable_freeze_dracut(chroot=""):
         grub_new_cfg = open(grub_tmp_cfg_name, 'w')
 
     for line in grub_cfg:
-        if line.startswith('GRUB_CMDLINE_LINUX_DEFAULT'):
+        if line.startswith('GRUB_CMDLINE_LINUX'):
             line = re.sub(r'%s_root=UUID=[\S]*([\'" ])' % modulename, r'\1', line)
             line = re.sub(r'%s_root=DIR=[\S]*([\'" ])' % modulename, r'\1', line)
             line = re.sub(r' rfreeze_skip_dirs=[\S]*([\'" ])', r'\1', line)
@@ -346,7 +346,7 @@ def _enable_freeze_dracut(uuid, skip_dirs, folder):
         os.system('dracut -f /boot/initrd-$(uname -r).img $(uname -r)')
 
     for line in grub_cfg:
-        if line.startswith('GRUB_CMDLINE_LINUX_DEFAULT'):
+        if line.startswith('GRUB_CMDLINE_LINUX'):
             line = re.sub(r'([\'"]\s*)$', r' rfreeze_skip_dirs=%s %s_root=UUID=\1' % (dracut_skip_dirs,modulename), line)
             if uuid:
                 line = line.replace(modulename + "_root=UUID=",modulename +  "_root=UUID=" + uuid)
