@@ -364,7 +364,9 @@ def _enable_freeze_dracut(uuid, skip_dirs, folder):
     dracut_skip_dirs = ":".join(skip_dirs)
 
     # Check if initrd already contains union-mount
-    lsinitrd = subprocess.check_output(('lsinitrd'))
+    # Commented out line which doesn't work in RELS 6 with py26
+#    lsinitrd = subprocess.check_output(('lsinitrd'))
+    lsinitrd = subprocess.Popen(['lsinitrd'], stdout=subprocess.PIPE).communicate()[0]
     union_mount_present = lsinitrd.find("union_mount") >= 0
     if not union_mount_present:
         os.system('dracut -f /boot/initrd-$(uname -r).img $(uname -r)')
