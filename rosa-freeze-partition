@@ -7,6 +7,6 @@ do
     mkdir -m 755 -p "/tmp/sysroot-rw/${d}"
     mkdir -p "/tmp/sysroot-ro/${d}"
     mount -o bind "/${d}" "/tmp/sysroot-ro/${d}"
-    mkdir -p "tmp/sysroot-rw/workdir/${d}"
+    mkdir -p "/tmp/sysroot-rw/workdir/${d}"
     mount -n -t overlay -o "upperdir=/tmp/sysroot-rw/${d},lowerdir=/${d},workdir=/tmp/sysroot-rw/workdir/${d}" "/${d}"
 done
