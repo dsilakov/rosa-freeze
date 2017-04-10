@@ -208,7 +208,7 @@ def get_status():
     if os.path.isdir("/tmp/sysroot-rw"):
         union_mounted = os.system("findmnt --target /tmp/sysroot-rw -n | grep -v /dev/mapper > /dev/null")
     else:
-        union_mounted = 0
+        union_mounted = 1
     if union_enabled == 0 and union_mounted == 0:
         return 'enabled'
     else:
