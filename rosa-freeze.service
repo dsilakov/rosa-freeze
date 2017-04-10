@@ -6,7 +6,7 @@ Before=mandriva-boot-links.service fedora-autorelabel.service
 [Service]
 Type=forking
 EnvironmentFile=-/etc/sysconfig/rfreeze
-ExecStart=/sbin/rosa-freeze-partition
+ExecStart=/usr/sbin/rosa-freeze-partition
 
 [Install]
 WantedBy=basic.target
