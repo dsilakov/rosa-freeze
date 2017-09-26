@@ -252,9 +252,7 @@ Get available restore points
 def list_restore_points(folder=""):
     points = []
     try:
-        for d in os.listdir(folder):
-            if os.path.isdir(folder + "/" + d):
-                points.append(d)
+        points = [d for d in os.listdir(folder) if os.path.isdir(folder + "/" + d)]
     except:
         # Just return empty array if we can't get a list of restore points
         # (e.g., if 'folder' doesn't exist or can't be read)
