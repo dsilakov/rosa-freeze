@@ -15,9 +15,9 @@ import sys
 import shutil
 import time
 import subprocess
+import fileinput
 
 grub_cfg_name = '/etc/default/grub'
-grub_tmp_cfg_name = '/etc/default/grub.new'
 
 rfreeze_config = '/etc/rfreeze.conf'
 modulename = 'overlay'
@@ -360,8 +360,6 @@ def _enable_freeze_now(skip_dirs, storage, folder="", use_systemd=1):
 Modify dracut parameters in grub config - add root
 '''
 def _enable_freeze_dracut(uuid, skip_dirs, folder):
-    grub_cfg = open(grub_cfg_name, 'r')
-    grub_new_cfg = open(grub_tmp_cfg_name, 'w')
     dracut_skip_dirs = ":".join(skip_dirs)
 
     # Check if initrd already contains union-mount
@@ -372,6 +370,7 @@ def _enable_freeze_dracut(uuid, skip_dirs, folder):
     if not union_mount_present:
         os.system('dracut -f /boot/initrd-$(uname -r).img $(uname -r)')
 
+    grub_cfg = fileinput.FileInput(grub_cfg_name, inplace=True)
     for line in grub_cfg:
         if line.startswith('GRUB_CMDLINE_LINUX'):
             line = re.sub(r'([\'"]\s*)$', r' rfreeze_skip_dirs=%s %s_root=UUID=\1' % (dracut_skip_dirs,modulename), line)
@@ -379,10 +378,8 @@ def _enable_freeze_dracut(uuid, skip_dirs, folder):
                 line = line.replace(modulename + "_root=UUID=",modulename +  "_root=UUID=" + uuid)
             elif folder:
                 line = line.replace(modulename + "_root=UUID=", modulename +  "_root=DIR=" + folder)
-        grub_new_cfg.write(line)
-    grub_new_cfg.close()
+        print(line.rstrip())
 
-    shutil.move(grub_tmp_cfg_name, grub_cfg_name)
     os.system("update-grub2")
 
 '''
