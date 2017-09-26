@@ -2,6 +2,8 @@
 
 mkdir -p /tmp/xinos
 
+[[ -z $OUTER_FOLDERS ]] && exit 0
+
 for d in $OUTER_FOLDERS
 do
     mkdir -m 755 -p "/tmp/sysroot-rw/${d}"
