@@ -141,6 +141,7 @@ def disable_freeze():
     os.system("mount -o bind /proc /tmp/sysroot-orig/proc")
     os.system("mount -o bind /sys /tmp/sysroot-orig/sys")
     os.system("mount -o bind /run /tmp/sysroot-orig/run")
+    os.system("mount -o bind /boot /tmp/sysroot-orig/boot")
     # Update dracut options in grub config
     _disable_freeze_dracut('/tmp/sysroot-orig/')
     os.system("chroot /tmp/sysroot-orig/ update-grub2")
