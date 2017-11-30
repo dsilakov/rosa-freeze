@@ -303,28 +303,17 @@ Modify dracut parameters in grub config - drop root
 def _disable_freeze_dracut(chroot=""):
     try:
         # /etc is protected
-        grub_cfg = open(chroot + grub_cfg_name, 'r')
-        grub_new_cfg = open(chroot + grub_tmp_cfg_name, 'w')
+        grub_cfg = fileinput.FileInput(chroot + grub_cfg_name, inplace=True)
     except:
         # /etc is skipped
-        grub_cfg = open(grub_cfg_name, 'r')
-        grub_new_cfg = open(grub_tmp_cfg_name, 'w')
+        grub_cfg = fileinput.FileInput(grub_cfg_name, inplace=True)
 
     for line in grub_cfg:
         if line.startswith('GRUB_CMDLINE_LINUX'):
             line = re.sub(r'%s_root=UUID=[\S]*([\'" ])' % modulename, r'\1', line)
             line = re.sub(r'%s_root=DIR=[\S]*([\'" ])' % modulename, r'\1', line)
             line = re.sub(r' rfreeze_skip_dirs=[\S]*([\'" ])', r'\1', line)
-        grub_new_cfg.write(line)
-    grub_new_cfg.close()
-
-    try:
-        # /etc is protected
-        shutil.move(chroot + grub_tmp_cfg_name, chroot + grub_cfg_name)
-    except:
-        # /etc is skipped
-        shutil.move(grub_tmp_cfg_name, grub_cfg_name)
-
+        print(line.rstrip())
 
 '''
 Enter freeze mode in a running system
